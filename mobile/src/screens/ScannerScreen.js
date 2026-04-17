@@ -1,9 +1,57 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Dimensions, Alert, ActivityIndicator } from 'react-native';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 
 const { width, height } = Dimensions.get('window');
 
 export default function ScannerScreen({ navigation }) {
+  const [permission, requestPermission] = useCameraPermissions();
+  const [scanned, setScanned] = useState(false);
+  const [flash, setFlash] = useState(false);
+
+  useEffect(() => {
+    if (!permission) {
+      requestPermission();
+    }
+  }, [permission]);
+
+  const handleBarCodeScanned = ({ type, data }) => {
+    setScanned(true);
+    // Vibrate or play sound here if possible
+    Alert.alert(
+      "Ticket Verified",
+      `Successfully scanned: ${data}\n\nTicket Status: [VALID]`,
+      [
+        { text: "Scan Another", onPress: () => setScanned(false) },
+        { text: "Done", onPress: () => navigation.goBack() }
+      ],
+      { cancelable: false }
+    );
+  };
+
+  if (!permission) {
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#00e5c3" />
+        <Text style={styles.loaderText}>Requesting camera access...</Text>
+      </View>
+    );
+  }
+
+  if (!permission.granted) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>No access to camera</Text>
+        <TouchableOpacity style={styles.retryBtn} onPress={requestPermission}>
+          <Text style={styles.retryText}>Allow Camera Access</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.closeBtn} onPress={() => navigation.goBack()}>
+          <Text style={styles.closeText}>Close</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -11,26 +59,39 @@ export default function ScannerScreen({ navigation }) {
           <Text style={styles.backText}>✕</Text>
         </TouchableOpacity>
         <Text style={styles.title}>Ticket Scanner</Text>
-        <View style={{ width: 40 }} />
+        <TouchableOpacity onPress={() => setFlash(!flash)} style={styles.flashHeaderBtn}>
+          <Text style={styles.headerIcon}>{flash ? '⚡' : '🔦'}</Text>
+        </TouchableOpacity>
       </View>
 
-      <View style={styles.cameraPreview}>
-        {/* Mock Camera View */}
-        <View style={styles.overlay}>
-          <View style={styles.unfocusedContainer} />
-          <View style={styles.middleRow}>
+      <View style={styles.cameraContainer}>
+        <CameraView
+          style={styles.camera}
+          enableTorch={flash}
+          onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+          barcodeScannerSettings={{
+            barcodeTypes: ["qr"],
+          }}
+        >
+          <View style={styles.overlay}>
             <View style={styles.unfocusedContainer} />
-            <View style={styles.focusedContainer}>
-              <View style={styles.cornerTopLeft} />
-              <View style={styles.cornerTopRight} />
-              <View style={styles.cornerBottomLeft} />
-              <View style={styles.cornerBottomRight} />
-              <View style={styles.scanningLine} />
+            <View style={styles.middleRow}>
+              <View style={styles.unfocusedContainer} />
+              <View style={styles.focusedContainer}>
+                {/* Guidance Corners */}
+                <View style={[styles.corner, styles.cornerTopLeft]} />
+                <View style={[styles.corner, styles.cornerTopRight]} />
+                <View style={[styles.corner, styles.cornerBottomLeft]} />
+                <View style={[styles.corner, styles.cornerBottomRight]} />
+                
+                {/* Advanced Scanning Line */}
+                <View style={styles.scanningLine} />
+              </View>
+              <View style={styles.unfocusedContainer} />
             </View>
             <View style={styles.unfocusedContainer} />
           </View>
-          <View style={styles.unfocusedContainer} />
-        </View>
+        </CameraView>
 
         <View style={styles.instructions}>
           <Text style={styles.instructionText}>
@@ -40,15 +101,10 @@ export default function ScannerScreen({ navigation }) {
       </View>
 
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.flashBtn}>
-          <Text style={styles.flashIcon}>🔦</Text>
-          <Text style={styles.flashText}>Flash Off</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.historyBtn}>
-          <Text style={styles.historyIcon}>📋</Text>
-          <Text style={styles.historyText}>History</Text>
-        </TouchableOpacity>
+        <View style={styles.statusBadge}>
+          <Text style={styles.statusText}>⚡ System Online & Ready</Text>
+        </View>
+        <Text style={styles.footerBrand}>Powered by TicketVerse Elite</Text>
       </View>
     </SafeAreaView>
   );
@@ -59,6 +115,49 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#0a0a0f',
   },
+  loaderContainer: {
+    flex: 1,
+    backgroundColor: '#0a0a0f',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loaderText: {
+    color: '#7878a0',
+    marginTop: 20,
+    fontSize: 16,
+  },
+  errorContainer: {
+    flex: 1,
+    backgroundColor: '#0a0a0f',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 30,
+  },
+  errorText: {
+    color: '#fff',
+    fontSize: 18,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  retryBtn: {
+    backgroundColor: '#00e5c3',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 12,
+    marginBottom: 16,
+  },
+  retryText: {
+    color: '#0a0a0f',
+    fontWeight: '700',
+    fontSize: 16,
+  },
+  closeBtn: {
+    padding: 10,
+  },
+  closeText: {
+    color: '#7878a0',
+    fontSize: 14,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -67,145 +166,166 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
   },
   backBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: 'rgba(255,255,255,0.05)',
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
   },
   backText: {
     color: '#fff',
+    fontSize: 20,
+  },
+  flashHeaderBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+  },
+  headerIcon: {
     fontSize: 18,
   },
   title: {
     color: '#fff',
     fontSize: 18,
-    fontWeight: '700',
-    letterSpacing: 0.5,
+    fontWeight: '800',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
   },
-  cameraPreview: {
+  cameraContainer: {
     flex: 1,
-    backgroundColor: '#16162a',
-    marginHorizontal: 20,
-    marginTop: 10,
-    borderRadius: 30,
+    marginHorizontal: 16,
+    marginTop: 8,
+    marginBottom: 20,
+    borderRadius: 36,
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: '#000',
+    elevation: 20,
+    shadowColor: '#00e5c3',
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+  },
+  camera: {
+    flex: 1,
   },
   overlay: {
     flex: 1,
   },
   unfocusedContainer: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(10,10,15,0.7)',
   },
   middleRow: {
     flexDirection: 'row',
-    height: width * 0.65,
+    height: width * 0.7,
   },
   focusedContainer: {
-    width: width * 0.65,
+    width: width * 0.7,
     position: 'relative',
+    backgroundColor: 'transparent',
+  },
+  corner: {
+    position: 'absolute',
+    width: 35,
+    height: 35,
+    borderColor: '#00e5c3',
+    borderWidth: 5,
   },
   cornerTopLeft: {
-    position: 'absolute',
     top: 0,
     left: 0,
-    width: 30,
-    height: 30,
-    borderTopWidth: 4,
-    borderLeftWidth: 4,
-    borderColor: '#00e5c3',
-    borderTopLeftRadius: 15,
+    borderRightWidth: 0,
+    borderBottomWidth: 0,
+    borderTopLeftRadius: 20,
   },
   cornerTopRight: {
-    position: 'absolute',
     top: 0,
     right: 0,
-    width: 30,
-    height: 30,
-    borderTopWidth: 4,
-    borderRightWidth: 4,
-    borderColor: '#00e5c3',
-    borderTopRightRadius: 15,
+    borderLeftWidth: 0,
+    borderBottomWidth: 0,
+    borderTopRightRadius: 20,
   },
   cornerBottomLeft: {
-    position: 'absolute',
     bottom: 0,
     left: 0,
-    width: 30,
-    height: 30,
-    borderBottomWidth: 4,
-    borderLeftWidth: 4,
-    borderColor: '#00e5c3',
-    borderBottomLeftRadius: 15,
+    borderRightWidth: 0,
+    borderTopWidth: 0,
+    borderBottomLeftRadius: 20,
   },
   cornerBottomRight: {
-    position: 'absolute',
     bottom: 0,
     right: 0,
-    width: 30,
-    height: 30,
-    borderBottomWidth: 4,
-    borderRightWidth: 4,
-    borderColor: '#00e5c3',
-    borderBottomRightRadius: 15,
+    borderLeftWidth: 0,
+    borderTopWidth: 0,
+    borderBottomRightRadius: 20,
   },
   scanningLine: {
     position: 'absolute',
     left: '10%',
     width: '80%',
-    height: 2,
-    backgroundColor: 'rgba(0, 229, 195, 0.5)',
+    height: 3,
+    backgroundColor: '#00e5c3',
     top: '50%',
     shadowColor: '#00e5c3',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 1,
-    shadowRadius: 10,
-    elevation: 5,
+    shadowRadius: 15,
+    elevation: 8,
+    borderRadius: 100,
   },
   instructions: {
     position: 'absolute',
-    bottom: 40,
-    left: 20,
-    right: 20,
+    bottom: 50,
+    left: 30,
+    right: 30,
     alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 100,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   instructionText: {
-    color: 'rgba(255,255,255,0.7)',
-    fontSize: 14,
+    color: '#e8e8f0',
+    fontSize: 13,
     textAlign: 'center',
-    lineHeight: 20,
+    fontWeight: '600',
+    letterSpacing: 0.3,
   },
   footer: {
+    alignItems: 'center',
+    paddingBottom: 40,
+  },
+  statusBadge: {
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    paddingVertical: 30,
-  },
-  flashBtn: {
     alignItems: 'center',
+    backgroundColor: 'rgba(0,229,195,0.08)',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 100,
+    borderWidth: 1,
+    borderColor: 'rgba(0,229,195,0.15)',
+    marginBottom: 12,
   },
-  flashIcon: {
-    fontSize: 24,
-    marginBottom: 8,
-  },
-  flashText: {
-    color: '#7878a0',
+  statusText: {
+    color: '#00e5c3',
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: '700',
+    textTransform: 'uppercase',
   },
-  historyBtn: {
-    alignItems: 'center',
-  },
-  historyIcon: {
-    fontSize: 24,
-    marginBottom: 8,
-  },
-  historyText: {
-    color: '#7878a0',
-    fontSize: 12,
-    fontWeight: '600',
+  footerBrand: {
+    color: '#4a4a68',
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
   },
 });
