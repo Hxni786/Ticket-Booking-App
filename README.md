@@ -64,7 +64,19 @@ cd mobile
 npm install
 npx expo start
 ```
-*Use the Expo Go app on your phone to scan the QR code and experience the app, or download the compiled `.apk` release!*
+*Use the Expo Go app on your phone to scan the QR code and experience the app!*
+
+---
+
+## 📲 Download & Preview
+
+Experience the **TicketVerse Elite** directly on your Android device:
+
+<div align="center">
+  <a href="https://expo.dev/artifacts/eas/kHcpfcayvQPo3QPwt2LV5W.apk">
+    <img src="https://img.shields.io/badge/Download-Android%20APK-00e5c3?style=for-the-badge&logo=android" alt="Download APK" />
+  </a>
+</div>
 
 ---
 <div align="center">
