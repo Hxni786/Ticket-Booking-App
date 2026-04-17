@@ -92,6 +92,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <Navbar
+        navigation={navigation}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         activeCategory={activeCategory}

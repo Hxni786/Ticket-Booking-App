@@ -8,13 +8,27 @@ const CATEGORIES = [
   { id: 'travel', label: 'Travel', icon: '✈️' },
 ];
 
-export default function Navbar({ searchQuery, setSearchQuery, activeCategory, setActiveCategory }) {
+export default function Navbar({ navigation, searchQuery, setSearchQuery, activeCategory, setActiveCategory }) {
   return (
     <View style={styles.header}>
       <View style={styles.topRow}>
         <View style={styles.logo}>
           <Text style={styles.logoIcon}>🎟️</Text>
           <Text style={styles.logoText}>TicketVerse</Text>
+        </View>
+        <View style={styles.navActions}>
+          <TouchableOpacity 
+            style={styles.actionBtn} 
+            onPress={() => navigation.navigate('Scanner')}
+          >
+            <Text style={styles.actionIcon}>📸</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.actionBtn} 
+            onPress={() => navigation.navigate('CardScanner')}
+          >
+            <Text style={styles.actionIcon}>💳</Text>
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -67,10 +81,28 @@ const styles = StyleSheet.create({
   },
   topRow: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 16,
     paddingHorizontal: 20,
+  },
+  navActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  actionBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#16162a',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.07)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  actionIcon: {
+    fontSize: 18,
   },
   logo: {
     flexDirection: 'row',
