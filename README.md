@@ -1,106 +1,58 @@
-# 🎟️ TicketVerse — Ticket Booking App
-
-A full-stack ticket booking web app for **Movies**, **Events**, and **Travel**, built with React + Vite (frontend) and Node.js + Express + MySQL (backend).
-
----
-
-## 📁 Project Structure
-
-```
-ticket-booking-app/
-├── client/                 # React + Vite frontend
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── Navbar.jsx / Navbar.module.css
-│   │   │   ├── SearchBar.jsx / SearchBar.module.css
-│   │   │   └── MovieCard.jsx / MovieCard.module.css
-│   │   ├── pages/
-│   │   │   └── Home.jsx / Home.module.css
-│   │   ├── services/
-│   │   │   └── api.js          # Axios API calls
-│   │   ├── App.jsx
-│   │   ├── main.jsx
-│   │   └── index.css           # Global styles + CSS vars
-│   ├── index.html
-│   ├── vite.config.js
-│   └── package.json
-│
-├── server/                 # Node.js + Express backend
-│   ├── config/
-│   │   └── db.js               # MySQL pool connection
-│   ├── controllers/
-│   │   └── movieController.js
-│   ├── routes/
-│   │   └── movieRoutes.js
-│   ├── models/
-│   │   └── movieModel.js
-│   ├── server.js
-│   ├── .env.example
-│   └── package.json
-│
-├── database/
-│   ├── schema.sql              # Table definitions
-│   └── seed.sql                # 13 sample records
-│
-└── package.json                # Root with `npm run dev` (runs both)
-```
+<div align="center">
+  <img src="mobile/assets/icon.png" width="150" alt="TicketVerse Logo" />
+  <h1>TicketVerse</h1>
+  <p><strong>A Premium Full-Stack Mobile Booking Experience</strong></p>
+</div>
 
 ---
 
-## ⚡ Quick Start
+## 🎬 About TicketVerse
 
-### 1. Database Setup
+TicketVerse is a state-of-the-art mobile application designed to completely modernize the way you discover and book tickets for Movies, Events, and Travel. 
+
+Built using a powerful **React Native / Expo** frontend and a blazingly fast **Node.js + Express + MySQL** backend, TicketVerse boasts a 100% dark mode, ultra-premium glassmorphism design.
+
+## 📸 Premium Interface Showcases
+
+<div align="center">
+  <img src="mobile/assets/promo1.png" width="100%" alt="TicketVerse Home Screen" />
+  <p><em>The intuitive, glowing 2-column discovery grid.</em></p>
+</div>
+
+<br/>
+
+<div align="center">
+  <img src="mobile/assets/promo2.png" width="100%" alt="TicketVerse Details Screen" />
+  <p><em>The cinematic details screen featuring parallax scrolling and glassmorphism cards.</em></p>
+</div>
+
+## ✨ Key Technical Features
+
+*   **Cinematic "Stitch & Skills" UI:** Highly polished user interface with custom animations, blurred glassmorphism cards, and a sophisticated color palette (`#0a0a0f` deep darks with neon teal and gold accents).
+*   **Parallax & Gesture Animations:** Smooth, 60fps native animations using `Animated.ScrollView` and `useNativeDriver`.
+*   **Interactive Success Modals:** Satisfying visual feedback loop when completing a booking.
+*   **Zero-Duplicate Architecture:** Optimized SQL queries (`MIN(id)` grouping) ensures the grid remains perfectly clean.
+*   **Cross-Platform Ready:** Native-bridge stabilized configurations (`expo-status-bar`, `react-native-safe-area-context`) for flawless Android and iOS compilation.
+
+## 🚀 Getting Started
+
+### 1. The Backend (Server)
 ```bash
-mysql -u root -p
-source database/schema.sql
-source database/seed.sql
+cd server
+npm install
+npm start
 ```
+*Ensure you have MySQL running with the database populated via `database/schema.sql` and `database/seed.sql`.*
 
-### 2. Configure Environment
+### 2. The Mobile App (Expo)
 ```bash
-cp server/.env.example server/.env
-# Edit server/.env with your MySQL credentials
+cd mobile
+npm install
+npx expo start
 ```
-
-### 3. Install Dependencies
-```bash
-npm run install:all
-```
-
-### 4. Run the App
-```bash
-npm run dev
-# Frontend → http://localhost:3000
-# Backend  → http://localhost:5000
-```
+*Use the Expo Go app on your phone to scan the QR code and experience the app, or download the compiled `.apk` release!*
 
 ---
-
-## 🌐 API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/movies` | Get all tickets |
-| GET | `/api/movies/:id` | Get by ID |
-| GET | `/api/movies/search?q=term` | Search by title |
-| GET | `/api/movies/category/:cat` | Filter: movie / event / travel |
-| GET | `/api/movies/popular` | Top-rated tickets |
-| GET | `/api/health` | Server health check |
-
----
-
-## ✨ Features
-
-- **Search** — real-time filtering by title, genre, description
-- **Category Tabs** — All / Movies / Events / Travel
-- **Sort** — by Featured, Rating, Date, Price
-- **Seat Availability** — progress bar with urgency alert
-- **Skeleton Loading** — smooth UX while data loads
-- **Responsive** — works on mobile, tablet, desktop
-- **Error Handling** — graceful fallback with retry button
-
----
-
-## 🎨 Design System
-
-Custom CSS variables with dark theme, Syne (display) + DM Sans (body), teal/gold/violet accent palette.
+<div align="center">
+  <p>Built with ❤️ using React Native, Expo, Node.js & MySQL</p>
+</div>
