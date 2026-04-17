@@ -28,16 +28,14 @@ Built using a powerful **React Native / Expo** frontend and a blazingly fast **N
 
 ## 📸 Advanced Scanning Technology
 
-TicketVerse isn't just about booking; it's about a seamless entry and professional management experience.
+TicketVerse is built for efficiency, featuring a high-performance verification layer for instant entry and professional management.
 
 <div align="center">
-  <img src="mobile/assets/scanner_mockup.png" width="48%" alt="Ticket Scanner" />
-  <img src="mobile/assets/card_scanner_mockup.png" width="48%" alt="Card Scanner" />
-  <p><em>Left: Professional QR Ticket Scanner. Right: Premium Card/ID Scanner.</em></p>
+  <img src="mobile/assets/scanner_mockup.png" width="80%" alt="Ticket Scanner" />
+  <p><em>Premium QR Ticket Scanner with guidance overlays.</em></p>
 </div>
 
 *   **Real-time Ticket Verification:** Blazingly fast QR code scanning with neon-teal guidance overlays and haptic feedback.
-*   **Professional Card Recognition:** Dedicated scanner for ID cards and professional badges with gold-accented precision frames.
 *   **Intuitive Feedback Loop:** Immediate visual confirmation and success animations upon successful scan.
 
 ## ✨ Key Technical Features

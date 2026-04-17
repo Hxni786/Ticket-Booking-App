@@ -23,12 +23,6 @@ export default function Navbar({ navigation, searchQuery, setSearchQuery, active
           >
             <Text style={styles.actionIcon}>📸</Text>
           </TouchableOpacity>
-          <TouchableOpacity 
-            style={styles.actionBtn} 
-            onPress={() => navigation.navigate('CardScanner')}
-          >
-            <Text style={styles.actionIcon}>💳</Text>
-          </TouchableOpacity>
         </View>
       </View>
 
