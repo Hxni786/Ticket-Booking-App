@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TicketVerse — Movies, Events & Travel (Preview)</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎟️</text></svg>" />
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <!-- React & Babel CDNs -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    /* --- index.css --- */
+    :root {
+      --ink: #0a0a0f;
+      --ink-soft: #1a1a2e;
+      --surface: #0f0f1a;
+      --surface-2: #16162a;
+      --surface-3: #1e1e35;
+      --border: rgba(255,255,255,0.07);
+      --border-hover: rgba(255,255,255,0.15);
+      --gold: #f5c842;
+      --gold-dim: rgba(245,200,66,0.15);
+      --teal: #00e5c3;
+      --teal-dim: rgba(0,229,195,0.12);
+      --coral: #ff6b6b;
+      --text: #e8e8f0;
+      --text-muted: #7878a0;
+      --text-soft: #b0b0c8;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow: 0 20px 60px rgba(0,0,0,0.5);
+      --shadow-card: 0 8px 30px rgba(0,0,0,0.4);
+      --font-display: 'Syne', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--ink);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 20% 10%, rgba(0,229,195,0.05) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 50% at 80% 90%, rgba(245,200,66,0.04) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    #root { position: relative; z-index: 1; }
+    a { text-decoration: none; color: inherit; }
+    button { font-family: var(--font-body); cursor: pointer; border: none; outline: none; transition: all 0.2s; }
+    input { font-family: var(--font-body); }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--surface); }
+    ::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--teal); }
+
+    /* --- Navbar Styles --- */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 18px 0; transition: all 0.3s ease;
+    }
+    .navbar.scrolled {
+      background: rgba(10, 10, 15, 0.85);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 1px 0 var(--border), 0 4px 30px rgba(0,0,0,0.3);
+    }
+    .nav-container {
+      max-width: 1400px; margin: 0 auto; padding: 0 32px;
+      display: flex; align-items: center; gap: 32px;
+    }
+    .logo { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .logo-icon { font-size: 24px; filter: drop-shadow(0 0 8px rgba(245,200,66,0.6)); }
+    .logo-text {
+      font-family: var(--font-display); font-size: 20px; font-weight: 800;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--teal) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .categories { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+    .cat-btn {
+      display: flex; align-items: center; gap: 6px; padding: 8px 16px;
+      border-radius: 100px; background: transparent; color: var(--text-muted);
+      font-size: 13.5px; font-weight: 500; border: 1px solid transparent;
+    }
+    .cat-btn:hover { color: var(--text); background: var(--surface-2); border-color: var(--border); }
+    .cat-btn.active { color: var(--ink); background: var(--gold); border-color: var(--gold); font-weight: 600; }
+
+    /* --- SearchBar Styles --- */
+    .search-wrapper { flex: 1; max-width: 480px; position: relative; display: flex; align-items: center; }
+    .search-icon { position: absolute; left: 14px; color: var(--text-muted); pointer-events: none; }
+    .search-input {
+      width: 100%; padding: 10px 42px; background: var(--surface-2);
+      border: 1px solid var(--border); border-radius: 100px; color: var(--text); outline: none;
+    }
+    .search-input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px var(--teal-dim); }
+    .search-clear {
+      position: absolute; right: 12px; background: var(--surface-3); color: var(--text-muted);
+      width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    }
+    .search-clear:hover { background: var(--coral); color: white; }
+
+    /* --- Home Styles --- */
+    .hero { position: relative; padding: 160px 32px 80px; max-width: 1400px; margin: 0 auto; }
+    .hero-content { position: relative; z-index: 2; max-width: 600px; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600;
+      color: var(--teal); background: var(--teal-dim); padding: 6px 16px; border-radius: 100px;
+      border: 1px solid rgba(0,229,195,0.2); margin-bottom: 24px; text-transform: uppercase;
+    }
+    .hero-title {
+      font-family: var(--font-display); font-size: clamp(48px, 7vw, 82px);
+      font-weight: 800; line-height: 1.0; letter-spacing: -2px; margin-bottom: 24px;
+    }
+    .hero-accent {
+      background: linear-gradient(135deg, var(--gold) 0%, #ff9f43 50%, var(--teal) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero-sub { font-size: 17px; color: var(--text-soft); max-width: 420px; font-weight: 300; }
+    .hero-orbs { position: absolute; top: 0; right: 0; bottom: 0; width: 50%; pointer-events: none; }
+    .orb1 {
+      position: absolute; top: 20%; right: 15%; width: 280px; height: 280px;
+      background: radial-gradient(circle, rgba(245,200,66,0.18) 0%, transparent 70%);
+      filter: blur(30px); animation: float 6s ease-in-out infinite;
+    }
+    .orb2 {
+      position: absolute; bottom: 10%; right: 30%; width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(0,229,195,0.15) 0%, transparent 70%);
+      filter: blur(25px); animation: float 8s ease-in-out infinite reverse;
+    }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+
+    .content { max-width: 1400px; margin: 0 auto; padding: 0 32px 80px; }
+    .toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; gap: 16px; flex-wrap: wrap; }
+    .toolbar-left { display: flex; align-items: baseline; gap: 14px; }
+    .section-title { font-family: var(--font-display); font-size: 28px; font-weight: 800; }
+    .item-count { font-size: 13px; color: var(--text-muted); background: var(--surface-2); border: 1px solid var(--border); padding: 3px 10px; border-radius:100px; }
+    .sort-select { background: var(--surface-2); border: 1px solid var(--border); color: var(--text); padding: 8px 14px; border-radius: var(--radius-sm); font-size: 13.5px; outline: none; appearance: none; cursor: pointer; }
+    .sort-select:focus { border-color: var(--teal); }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 22px; }
+
+    /* --- MovieCard Styles --- */
+    .card {
+      background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; display: flex; flex-direction: column; transition: all 0.3s ease; cursor: pointer;
+      animation: fadeSlideUp 0.5s ease both;
+    }
+    .card:hover { transform: translateY(-6px); box-shadow: var(--shadow-card); border-color: var(--border-hover); }
+    @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+    .image-wrap { position: relative; aspect-ratio: 16/10; overflow: hidden; }
+    .poster { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+    .card:hover .poster { transform: scale(1.05); }
+    .image-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(10,10,15,0.85) 100%); }
+    .badge { position: absolute; top: 12px; left: 12px; font-size: 11px; font-weight: 700; font-family: var(--font-display); padding: 4px 10px; border-radius: 100px; backdrop-filter: blur(8px); }
+    .item-genre { position: absolute; top: 12px; right: 12px; font-size: 11px; color: var(--text-soft); background: rgba(10,10,15,0.7); padding: 4px 10px; border-radius:100px; }
+
+    .card-body { padding: 18px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+    .card-title { font-family: var(--font-display); font-size: 16px; font-weight: 700; line-height: 1.3; }
+    .stars { display: flex; align-items: center; gap: 2px; }
+    .star-full { color: var(--gold); }
+    .star-empty { color: var(--surface-3); }
+    .meta { display: flex; align-items: center; gap: 14px; color: var(--text-muted); font-size: 12px; }
+    .meta-item { display: flex; align-items: center; gap: 5px; }
+    .card-desc { font-size: 13px; color: var(--text-soft); line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    
+    .card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 4px; }
+    .price-amount { font-family: var(--font-display); font-size: 20px; font-weight: 800; }
+    .book-btn { display: flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: 100px; background: var(--accent, var(--gold)); color: var(--ink); font-size: 13px; font-weight: 600; }
+    
+    .seats { display: flex; flex-direction: column; gap: 5px; margin-top: 4px; }
+    .seats-bar { height: 3px; background: var(--surface-3); border-radius: 2px; overflow: hidden; }
+    .seats-progress { height: 100%; transition: width 0.6s ease; }
+    .seats-text { font-size: 11px; font-weight: 500; }
+
+    /* Search status info */
+    .search-status { padding: 12px 18px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; margin-bottom: 20px; color: var(--text-soft); }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-container { padding: 0 16px; flex-wrap: wrap; gap: 12px; }
+      .categories { width: 100%; justify-content: center; margin-left:0; }
+      .cat-btn span:last-child { display: none; }
+      .hero { padding: 140px 16px 60px; }
+      .hero-orbs { display: none; }
+      .content { padding: 0 16px 60px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useMemo } = React;
+
+    const MOCK_DATA = [
+      { id: 1, title: 'Dune: Part Three', poster: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=400', release_date: '2025-11-15', category: 'movie', genre: 'Sci-Fi', duration: '2h 45m', rating: 9.1, price: 15.99, description: 'The epic conclusion to the Dune saga.', available_seats: 120 },
+      { id: 2, title: 'The Grand Illusion', poster: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=400', release_date: '2025-10-03', category: 'movie', genre: 'Drama', duration: '2h 10m', rating: 8.7, price: 12.99, description: 'A timeless masterpiece returns to screens.', available_seats: 85 },
+      { id: 3, title: 'Neon Requiem', poster: 'https://images.unsplash.com/photo-1605106702842-01a887a31122?w=400', release_date: '2025-09-20', category: 'movie', genre: 'Thriller', duration: '1h 58m', rating: 8.2, price: 13.99, description: 'A cyberpunk noir thriller set in 2099.', available_seats: 95 },
+      { id: 4, title: 'Echoes of Tomorrow', poster: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=400', release_date: '2025-08-14', category: 'movie', genre: 'Sci-Fi', duration: '2h 22m', rating: 7.9, price: 11.99, description: 'Time travel meets emotional drama.', available_seats: 60 },
+      { id: 5, title: 'The Last Summit', poster: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=400', release_date: '2025-07-04', category: 'movie', genre: 'Adventure', duration: '2h 05m', rating: 8.4, price: 12.99, description: 'A breathtaking mountaineering adventure.', available_seats: 110 },
+      { id: 6, title: 'Coldplay Tour', poster: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400', release_date: '2025-12-01', category: 'event', genre: 'Concert', duration: '3h 00m', rating: 9.5, price: 89.99, description: 'Coldplay live in an unforgettable concert experience.', available_seats: 18 },
+      { id: 7, title: 'TEDx Islamabad', poster: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400', release_date: '2025-11-22', category: 'event', genre: 'Conference', duration: '6h 00m', rating: 8.8, price: 49.99, description: 'Ideas worth spreading — live in Islamabad.', available_seats: 800 },
+      { id: 8, title: 'Lahore Food Fest', poster: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400', release_date: '2025-10-18', category: 'event', genre: 'Festival', duration: '8h 00m', rating: 8.0, price: 25.00, description: 'A celebration of Pakistani culinary culture.', available_seats: 2000 },
+      { id: 9, title: 'Digital Art Expo', poster: 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400', release_date: '2025-09-05', category: 'event', genre: 'Exhibition', duration: '5h 00m', rating: 7.6, price: 20.00, description: 'Cutting-edge digital art from regional artists.', available_seats: 300 },
+      { id: 10, title: 'Lahore → Karachi', poster: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?w=400', release_date: '2025-08-01', category: 'travel', genre: 'Train', duration: '14h 30m', rating: 7.5, price: 35.00, description: 'Comfortable overnight train journey.', available_seats: 200 },
+      { id: 11, title: 'Islamabad → Dubai', poster: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=400', release_date: '2025-08-20', category: 'travel', genre: 'Flight', duration: '3h 15m', rating: 8.3, price: 299.00, description: 'Direct flight to Dubai International Airport.', available_seats: 150 },
+      { id: 12, title: 'Hunza Valley Tour', poster: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400', release_date: '2025-07-10', category: 'travel', genre: 'Tour', duration: '5 Days', rating: 9.2, price: 450.00, description: 'A 5-day guided tour through the majestic Hunza Valley.', available_seats: 12 },
+      { id: 13, title: 'Karachi → Istanbul', poster: 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=400', release_date: '2025-09-15', category: 'travel', genre: 'Flight', duration: '6h 45m', rating: 8.1, price: 520.00, description: 'Direct route to the heart of Istanbul.', available_seats: 180 }
+    ];
+
+    const CATEGORY_COLORS = {
+      movie: { accent: '#f5c842', bg: 'rgba(245,200,66,0.12)', label: 'Movie' },
+      event: { accent: '#00e5c3', bg: 'rgba(0,229,195,0.12)', label: 'Event' },
+      travel: { accent: '#a78bfa', bg: 'rgba(167,139,250,0.12)', label: 'Travel' },
+    };
+
+    function MovieCard({ item, index }) {
+      const cat = CATEGORY_COLORS[item.category] || CATEGORY_COLORS.movie;
+      const formattedDate = new Date(item.release_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      
+      return (
+        <article className="card" style={{ animationDelay: `${index * 60}ms` }}>
+          <div className="image-wrap">
+            <img src={item.poster} alt={item.title} className="poster" />
+            <div className="image-overlay" />
+            <span className="badge" style={{ color: cat.accent, background: cat.bg }}>{cat.label}</span>
+            <span className="item-genre">{item.genre}</span>
+          </div>
+          <div className="card-body">
+            <h3 className="card-title">{item.title}</h3>
+            <div className="stars">
+              {[...Array(5)].map((_, i) => (
+                <span key={i} className={i < Math.floor(item.rating) ? "star-full" : "star-empty"}>★</span>
+              ))}
+              <span style={{fontSize:'12px', marginLeft:'6px', color:'var(--text-muted)'}}>{item.rating}</span>
+            </div>
+            <div className="meta">
+              <span className="meta-item">📅 {formattedDate}</span>
+              <span className="meta-item">🕒 {item.duration}</span>
+            </div>
+            <p className="card-desc">{item.description}</p>
+            <div className="card-footer">
+              <div style={{display:'flex', alignItems:'baseline', gap:'4px'}}>
+                <span style={{fontSize:'11px', color:'var(--text-muted)'}}>from</span>
+                <span className="price-amount" style={{ color: cat.accent }}>${item.price}</span>
+              </div>
+              <button className="book-btn" style={{ background: cat.accent }}>Get Tickets</button>
+            </div>
+            {item.available_seats < 30 ? (
+              <div className="seats">
+                <div className="seats-bar"><div className="seats-progress" style={{width:'15%', background:'var(--coral)'}} /></div>
+                <span className="seats-text" style={{color:'var(--coral)'}}>⚡ Only {item.available_seats} left!</span>
+              </div>
+            ) : (
+              <div className="seats">
+                <div className="seats-bar"><div className="seats-progress" style={{width:'60%', background:cat.accent}} /></div>
+                <span className="seats-text" style={{color:'var(--text-muted)'}}>{item.available_seats} seats available</span>
+              </div>
+            )}
+          </div>
+        </article>
+      );
+    }
+
+    function Navbar({ searchQuery, setSearchQuery, activeCategory, setActiveCategory }) {
+      const [scrolled, setScrolled] = useState(false);
+      useEffect(() => {
+        const h = () => setScrolled(window.scrollY > 20);
+        window.addEventListener('scroll', h);
+        return () => window.removeEventListener('scroll', h);
+      }, []);
+
+      const cats = [
+        { id: 'all', label: 'All', icon: '✦' },
+        { id: 'movie', label: 'Movies', icon: '🎬' },
+        { id: 'event', label: 'Events', icon: '🎭' },
+        { id: 'travel', label: 'Travel', icon: '✈️' },
+      ];
+
+      return (
+        <header className={`navbar ${scrolled ? 'scrolled' : ''}`}>
+          <div className="nav-container">
+            <div className="logo">
+              <span className="logo-icon">🎟️</span>
+              <span className="logo-text">TicketVerse</span>
+            </div>
+            <div className="search-wrapper">
+              <span className="search-icon">🔍</span>
+              <input 
+                className="search-input" 
+                placeholder="Search..." 
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+              />
+              {searchQuery && <button className="search-clear" onClick={() => setSearchQuery('')}>✕</button>}
+            </div>
+            <nav className="categories">
+              {cats.map(c => (
+                <button 
+                  key={c.id} 
+                  className={`cat-btn ${activeCategory === c.id ? 'active' : ''}`}
+                  onClick={() => setActiveCategory(c.id)}
+                >
+                  <span>{c.icon}</span> <span>{c.label}</span>
+                </button>
+              ))}
+            </nav>
+          </div>
+        </header>
+      );
+    }
+
+    function App() {
+      const [searchQuery, setSearchQuery] = useState('');
+      const [activeCategory, setActiveCategory] = useState('all');
+      const [sortBy, setSortBy] = useState('default');
+
+      const filtered = useMemo(() => {
+        let items = [...MOCK_DATA];
+        if (activeCategory !== 'all') items = items.filter(i => i.category === activeCategory);
+        if (searchQuery) {
+          const q = searchQuery.toLowerCase();
+          items = items.filter(i => i.title.toLowerCase().includes(q) || i.description.toLowerCase().includes(q) || i.genre.toLowerCase().includes(q));
+        }
+        if (sortBy === 'rating') items.sort((a,b) => b.rating - a.rating);
+        if (sortBy === 'price_asc') items.sort((a,b) => a.price - b.price);
+        if (sortBy === 'price_desc') items.sort((a,b) => b.price - a.price);
+        return items;
+      }, [activeCategory, searchQuery, sortBy]);
+
+      return (
+        <div className="app">
+          <Navbar 
+            searchQuery={searchQuery} 
+            setSearchQuery={setSearchQuery} 
+            activeCategory={activeCategory} 
+            setActiveCategory={setActiveCategory} 
+          />
+          <main>
+            <section className="hero">
+              <div className="hero-content">
+                <div className="hero-badge">✦ Experience the Best</div>
+                <h1 className="hero-title">Your Next <br/><span className="hero-accent">Experience</span><br/> Awaits</h1>
+                <p className="hero-sub">Explore the world of movies, events, and travel destinations. All-in-one ticket booking platform.</p>
+              </div>
+              <div className="hero-orbs"><div className="orb1"/><div className="orb2"/></div>
+            </section>
+            <div className="content">
+              <div className="toolbar">
+                <div className="toolbar-left">
+                  <h2 className="section-title">{activeCategory === 'all' ? 'All Tickets' : activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1) + 's'}</h2>
+                  <span className="item-count">{filtered.length} results</span>
+                </div>
+                <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
+                  <span style={{fontSize:'12px', color:'var(--text-muted)'}}>Sort by</span>
+                  <select className="sort-select" value={sortBy} onChange={e => setSortBy(e.target.value)}>
+                    <option value="default">Featured</option>
+                    <option value="rating">Top Rated</option>
+                    <option value="price_asc">Price: Low to High</option>
+                    <option value="price_desc">Price: High to Low</option>
+                  </select>
+                </div>
+              </div>
+
+              {searchQuery && (
+                <div className="search-status">
+                  {filtered.length > 0 ? `Showing results for "${searchQuery}"` : `No results found for "${searchQuery}"`}
+                </div>
+              )}
+
+              <div className="grid">
+                {filtered.map((item, i) => <MovieCard key={item.id} item={item} index={i} />)}
+              </div>
+              
+              {filtered.length === 0 && (
+                <div style={{textAlign:'center', padding:'80px 0', color:'var(--text-muted)'}}>
+                  <div style={{fontSize:'48px', marginBottom:'16px'}}>🎭</div>
+                  <h3>Nothing to show</h3>
+                  <p>Try adjusting your search or filters.</p>
+                </div>
+              )}
+            </div>
+          </main>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
