@@ -1,112 +1,84 @@
-# 🎟️ TicketVerse — Premium Ticket Booking Platform
-
-A full-stack, responsive ticket booking platform designed for **Movies**, **Events**, and **Travel**. Engineered with modern web development practices, it features a React-based frontend, and a robust Node.js/Express backend communicating with a MySQL database.
-
----
-
-## 🏗️ Architecture Stack
-
-TicketVerse follows a standard **3-tier architecture** separating presentation, business logic, and data access:
-
-- **Client Tier (Frontend)**: 
-  - **React (Vite)**: Delivers a blazing-fast, component-driven user interface.
-  - **Axios**: Manages asynchronous HTTP requests to the backend API.
-  - **CSS Modules & Global Vars**: Implements isolated, maintainable, and theme-able styling.
-- **Application Tier (Backend)**:
-  - **Node.js & Express**: Provides a scalable RESTful API architecture.
-  - **MVC Pattern**: Separates endpoint definitions (Routes), business logic (Controllers), and data access (Models).
-- **Data Tier (Database)**:
-  - **MySQL**: Relational database structuring ticket details, categories, pricing, and dynamic seat availability.
+<div align="center">
+  <img src="mobile/assets/icon.png" width="150" alt="TicketVerse Logo" />
+  <h1>TicketVerse</h1>
+  <p><strong>A Premium Full-Stack Mobile Booking Experience</strong></p>
+</div>
 
 ---
 
-## 📁 Project Structure
+## 🎬 About TicketVerse
 
-```
-ticket-booking-app/
-├── client/                 # React + Vite frontend
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── Navbar / SearchBar / MovieCard
-│   │   ├── pages/
-│   │   │   └── Home
-│   │   ├── services/
-│   │   │   └── api.js      # Axios API calls
-│   │   ├── App.jsx / main.jsx
-│   │   └── index.css       # Global styles + CSS vars
-│   └── vite.config.js
-│
-├── server/                 # Node.js + Express backend
-│   ├── config/
-│   │   └── db.js           # MySQL pool connection
-│   ├── controllers/
-│   ├── routes/
-│   ├── models/
-│   ├── server.js
-│   └── .env.example
-│
-└── database/
-    ├── schema.sql          # Table definitions
-    └── seed.sql            # Sample data records
-```
+TicketVerse is a state-of-the-art mobile application designed to completely modernize the way you discover and book tickets for Movies, Events, and Travel. 
 
----
+Built using a powerful **React Native / Expo** frontend and a blazingly fast **Node.js + Express + MySQL** backend, TicketVerse boasts a 100% dark mode, ultra-premium glassmorphism design.
 
-## ✨ Core Features
+## 📸 Premium Interface Showcases
 
-- **Dynamic Search & Filtering** — Real-time filtering by title, genre, or description.
-- **Categorized Browsing** — Dedicated tabs for Movies, Events, and Travel.
-- **Smart Sorting** — Order results by Featured, Rating, Date, or Price.
-- **Live Seat Availability** — Visual progress bars with dynamic urgency alerts.
-- **Optimized UX** — Skeleton loaders for smooth perceived performance during data fetching.
-- **Fully Responsive** — Seamlessly adapts across mobile, tablet, and desktop environments.
-- **Resilient Architect** — Graceful error handling with robust fallback mechanisms.
+<div align="center">
+  <img src="mobile/assets/promo1.png" width="100%" alt="TicketVerse Home Screen" />
+  <p><em>The intuitive, glowing 2-column discovery grid.</em></p>
+</div>
 
----
+<br/>
 
-## ⚡ Quick Start & Deployment
+<div align="center">
+  <img src="mobile/assets/promo2.png" width="100%" alt="TicketVerse Details Screen" />
+  <p><em>The cinematic details screen featuring parallax scrolling and glassmorphism cards.</em></p>
+</div>
 
-### 1. Database Initialization
+## 📸 Advanced Scanning Technology
+
+TicketVerse is built for efficiency, featuring a high-performance **native verification layer** for instant entry and professional management.
+
+<div align="center">
+  <img src="mobile/assets/scanner_mockup.png" width="80%" alt="Ticket Scanner" />
+  <p><em>Premium QR Ticket Scanner with real-time camera integration and guidance overlays.</em></p>
+</div>
+
+*   **Native Camera Integration:** Powered by `expo-camera`, providing smooth, low-latency scanning directly on your device.
+*   **Real-time Ticket Verification:** Blazingly fast QR code scanning with neon-teal guidance overlays and haptic touch-points.
+*   **Intelligent Permission Handling:** Seamless user experience with built-in camera permission requesting and flash control.
+*   **Intuitive Feedback Loop:** Immediate visual confirmation and success animations upon successful scan.
+
+## ✨ Key Technical Features
+
+*   **Cinematic "Stitch & Skills" UI:** Highly polished user interface with custom animations, blurred glassmorphism cards, and a sophisticated color palette (`#0a0a0f` deep darks with neon teal and gold accents).
+*   **Parallax & Gesture Animations:** Smooth, 60fps native animations using `Animated.ScrollView` and `useNativeDriver`.
+*   **Interactive Success Modals:** Satisfying visual feedback loop when completing a booking.
+*   **Zero-Duplicate Architecture:** Optimized SQL queries (`MIN(id)` grouping) ensures the grid remains perfectly clean.
+*   **Cross-Platform Ready:** Native-bridge stabilized configurations (`expo-status-bar`, `react-native-safe-area-context`) for flawless Android and iOS compilation.
+
+## 🚀 Getting Started
+
+### 1. The Backend (Server)
 ```bash
-mysql -u root -p
-source database/schema.sql
-source database/seed.sql
+cd server
+npm install
+npm start
 ```
+*Ensure you have MySQL running with the database populated via `database/schema.sql` and `database/seed.sql`.*
 
-### 2. Environment Configuration
+### 2. The Mobile App (Expo)
 ```bash
-cp server/.env.example server/.env
-# Edit server/.env with your local MySQL credentials
+cd mobile
+npm install
+npx expo start
 ```
-
-### 3. Install Dependencies
-```bash
-cd ticket-booking-app
-npm run install:all
-```
-
-### 4. Launch Application
-```bash
-npm run dev
-# Frontend live at → http://localhost:3000
-# Backend running at → http://localhost:5000
-```
+*Use the Expo Go app on your phone to scan the QR code and experience the app!*
 
 ---
 
-## 🌐 API Reference Endpoints
+## 📲 Download & Preview
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/movies` | Retrieve all available tickets |
-| GET | `/api/movies/:id` | Fetch specific ticket details by ID |
-| GET | `/api/movies/search?q=term` | Query tickets matching title/description |
-| GET | `/api/movies/category/:cat` | Filter by category (movie/event/travel) |
-| GET | `/api/movies/popular` | Retrieve top-rated tickets |
-| GET | `/api/health` | Diagnostic server health check |
+Experience the **TicketVerse Elite** directly on your Android device:
+
+<div align="center">
+  <a href="https://expo.dev/artifacts/eas/kHcpfcayvQPo3QPwt2LV5W.apk">
+    <img src="https://img.shields.io/badge/Download-Android%20APK-00e5c3?style=for-the-badge&logo=android" alt="Download APK" />
+  </a>
+</div>
 
 ---
-
-## 🎨 Design System
-
-Engineered with custom CSS variables supporting a rich dark theme ecosystem. Typography powered by **Syne** (display fonts) and **DM Sans** (body text), complemented by a stunning teal, gold, and violet accent color palette.
+<div align="center">
+  <p>Built with ❤️ using React Native, Expo, Node.js & MySQL</p>
+</div>
